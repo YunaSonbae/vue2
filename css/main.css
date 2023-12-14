@@ -70,3 +70,47 @@ button {
     background-color: #fff;
     margin-bottom: 15px;
 }
+
+#cols {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.col {
+    width: 30%;
+    text-align: center;
+    background-color: white;
+}
+
+.col-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 15px;  
+    flex-direction: column;
+}
+
+.subtask-wrapper {
+    display: flex;
+    gap: 15px;
+}
+
+.cols-wrapper {
+    width: 100%;
+    display: flex;
+    flex-grow: 1;
+    min-height: 680px;
+    justify-content: center;
+    gap: 15px;
+}
+
+.flex-revers {
+    display: flex;
+    flex-direction: column-reverse;
+
+}
+
+.p-title {
+    font-size:large;
+}
