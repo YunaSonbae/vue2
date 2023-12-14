@@ -1,0 +1,72 @@
+#app{
+    text-align: center;
+    padding: 0 15px 50px;
+}
+body {
+
+    background-color: #a090aa;
+    font-family: "monospace";
+    color: #350648;
+}
+
+h1 {
+    text-align: center;
+}
+
+.addform{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    font-size: 28px;
+}
+.tasks{
+    display: flex;
+    list-style-type: disc;
+    margin: 0px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.completed{
+    text-decoration: line-through;
+}
+
+.error{
+    color: red;
+    font-size:large;
+    border-bottom: 1px solid black; 
+}
+
+.cards{
+    list-style-type: none;
+    font-size: 14px;
+    width: 95%;
+    background-color: burlywood;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin: 10px;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+p {
+    text-wrap: normal;
+    margin: 0px;
+}
+
+input {
+    padding: 10px 15px;
+    border: none;
+}
+
+button {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    margin-bottom: 15px;
+}
