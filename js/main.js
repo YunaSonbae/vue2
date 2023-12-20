@@ -202,3 +202,14 @@ Vue.component('newcard', {
         <button type="submit">Add a card</button>
     </form>
     `,
+    data() {
+        return {
+            title: null,
+            subtask1: null,
+            subtask2: null,
+            subtask3: null,
+            subtask4: null,
+            subtask5: null,
+            errors: [],
+        }
+    },
