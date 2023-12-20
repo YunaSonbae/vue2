@@ -56,3 +56,53 @@ Vue.component('cols', {
     </div>
 
 `,
+    data() {
+        return {
+            column1: [],
+            column2: [],
+            column3: [],
+            errors: [],
+        }
+    },
+
+    mounted() {
+        eventBus.$on('card-submitted', card => {
+                this.errors = []
+            if (this.column1.length < 3){
+                this.column1.push(card)
+            } else {
+                this.errors.push("You can't add a new card now.")
+            }
+        })
+    },
+    methods: {
+        newStatus1(card, t) {
+            t.completed = true
+            let count = 0
+            card.status = 0
+            this.errors = []
+            for (let i = 0; i < 5; i++) {
+                if (card.subtasks[i].title != null) {
+                    count++
+                }
+            }
+
+            for (let i = 0; i < count; i++) {
+                if (card.subtasks[i].completed === true) {
+                    card.status++
+                }
+            }
+            if (card.status/count*100 >= 50 && card.status/count*100 < 100 && this.column2.length < 5) {
+                    this.column2.push(card)
+                    this.column1.splice(this.column1.indexOf(card), 1)
+            } else if (this.column2.length === 5) {
+                this.errors.push('You need to complete card in the second column to add new card or complete card in the first column')
+                if(this.column1.length > 0) {
+                    this.column1.forEach(item => {
+                        item.subtasks.forEach(item => {
+                            item.completed = true;
+                        })
+                    })
+                }
+            }
+        },
