@@ -1,244 +1,264 @@
 let eventBus = new Vue()
 
-Vue.component('cols', { 
-    template:`
-    <div id="cols">
-    <div class="col-wrapper">
-    <h2 class="error" v-for="error in errors">{{error}}</h2>
-        <newcard></newcard>
-        <div class="cols-wrapper">
-            <div class="col">
-                <ul>
-                    <li class="cards" style="background-color: #e79ba2" v-for="card in column1"><p class="p-title">{{ card.title }}</p>
-                        <ul>
-                            <li class="tasks" v-for="t in card.subtasks" v-if="t.title != null">
-                                <input @click="newStatus1(card, t)"
-                                class="checkbox" type="checkbox"
-                                :disabled="t.completed">
-                                <p :class="{completed: t.completed}">{{t.title}}</p>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            <div class="col">
-                <ul>
-                    <li class="cards" style="background-color: #f5f287" v-for="card in column2"><p class="p-title">{{ card.title }}</p>
-                        <ul>
-                            <li class="tasks" v-for="t in card.subtasks" v-if="t.title != null">
-                                <input @click="newStatus2(card, t)"
-                                class="checkbox" type="checkbox" 
-                                :disabled="t.completed">
-                                <p :class="{completed: t.completed}">{{t.title}}</p>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            <div class="col">
-                <ul>
-                    <li class="cards" style="background-color: lightgreen" v-for="card in column3"><p class="p-title">{{ card.title }}</p><div class="flex-revers"><p>{{ card.date }}</p>
-                    <ul>
-                            <li class="tasks" v-for="t in card.subtasks" v-if="t.title != null">
-                                <input @click="t.completed = true"
-                                class="checkbox" type="checkbox" 
-                                :disabled="t.completed">
-                                <p :class="{completed: t.completed}">{{t.title}}</p>
-                                
-                            </li>
-                        </ul>
-                    </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    </div>
-
-`,
-    data() {
-        return {
-            column1: [],
-            column2: [],
-            column3: [],
-            errors: [],
-        }
-    },
-
-    mounted() {
-        eventBus.$on('card-submitted', card => {
-                this.errors = []
-            if (this.column1.length < 3){
-                this.column1.push(card)
-            } else {
-                this.errors.push("You can't add a new card now.")
-            }
-        })
-    },
-    methods: {
-        newStatus1(card, t) {
-            t.completed = true
-            let count = 0
-            card.status = 0
-            this.errors = []
-            for (let i = 0; i < 5; i++) {
-                if (card.subtasks[i].title != null) {
-                    count++
-                }
-            }
-
-            for (let i = 0; i < count; i++) {
-                if (card.subtasks[i].completed === true) {
-                    card.status++
-                }
-            }
-            if (card.status/count*100 >= 50 && card.status/count*100 < 100 && this.column2.length < 5) {
-                    this.column2.push(card)
-                    this.column1.splice(this.column1.indexOf(card), 1)
-            } else if (this.column2.length === 5) {
-                this.errors.push('You need to complete card in the second column to add new card or complete card in the first column')
-                if(this.column1.length > 0) {
-                    this.column1.forEach(item => {
-                        item.subtasks.forEach(item => {
-                            item.completed = true;
-                        })
-                    })
-                }
-            }
-        },
-        newStatus2(card, t) {
-            t.completed = true
-            let count = 0
-            card.status = 0
-            for (let i = 0; i < 5; i++) {
-                if (card.subtasks[i].title != null) {
-                    count++
-                }
-            }
-
-            for (let i = 0; i < count; i++) {
-                if (card.subtasks[i].completed === true) {
-                    card.status++
-                }
-            }
-            if (card.status/count*100 === 100) {
-                this.column3.push(card)
-                this.column2.splice(this.column2.indexOf(card), 1)
-                card.date = new Date()
-            }
-            if(this.column2.length < 5) {
-                if(this.column1.length > 0) {
-                    this.column1.forEach(item => {
-                        item.subtasks.forEach(item => {
-                            item.completed = false;
-                        })
-                    })
-                }
-            }
-        }
-    },
-    
-
-    computed: {
-
-    },
-    props: {
-        card: {
-            title: {
-                type: Text,
-                required: true
-            },
-            subtasks: {
-                type: Array,
-                required: true,
-                completed: {
-                    type: Boolean,
-                    required: true
-                }
-            },
-            date: {
-                type: Date,
-                required: false
-            },
-            status: {
-                type: Number,
-                required: true
-            },
-            errors: {
-                type: Array,
-                required: false
-            }
-        },
-    },
-       
-   
-})
-
-
-Vue.component('newcard', {
+Vue.component('column', {
+    // колонки
     template: `
-    <form class="addform" @submit.prevent="onSubmit">
-        <p>
-            <label for="title">Title</label>
-            <input id="title" required v-model="title" type="text" placeholder="title">
-        </p>
-        <div class="subtask-wrapper">
-            <div>
-                <input required id="subtask1" v-model="subtask1" placeholder="subtask">
+ 
+        <div class="columns">
+            <newCard></newCard>
+        <p class="error" v-for="error in errors">{{ error }}</p>
+                <column_1 :column_1="column_1"></column_1>
+                <column_2 :column_2="column_2"></column_2>
+                <column_3 :column_3="column_3"></column_3>
             </div>
-            <div>
-                <input required id="subtask2" v-model="subtask2" maxlength="30" placeholder="subtask">
-            </div>
-            <div>
-                <input required id="subtask3" v-model="subtask3" maxlength="30" placeholder="subtask">
-            </div>
-            <div>
-                <input  id="subtask4" v-model="subtask4" maxlength="30" placeholder="subtask">
-            </div>
-            <div>
-                <input  id="subtask5" v-model="subtask5" maxlength="30" placeholder="subtask">
-            </div>
-        </div>
-        <button type="submit">Add a card</button>
-    </form>
     `,
     data() {
         return {
-            title: null,
-            subtask1: null,
-            subtask2: null,
-            subtask3: null,
-            subtask4: null,
-            subtask5: null,
+            column_1: [],
+            column_2: [],
+            column_3: [], 
             errors: [],
         }
     },
-    methods: {
-        onSubmit() {
-            let card = {
-                title: this.title,
-                subtasks: [{title: this.subtask1, completed: false},
-                            {title: this.subtask2, completed: false},
-                            {title: this.subtask3, completed: false},
-                            {title: this.subtask4, completed: false},
-                            {title: this.subtask5, completed: false}],
-                date: null,
-                status: 0
+    mounted() {
+
+        if ((JSON.parse(localStorage.getItem("column_1")) != null)){
+            this.column_1 = JSON.parse(localStorage.getItem("column_1"))
+        }
+        if ((JSON.parse(localStorage.getItem("column_2")) != null)){
+            this.column_2 = JSON.parse(localStorage.getItem("column_2"))
+        }
+        if ((JSON.parse(localStorage.getItem("column_3")) != null)){
+            this.column_3 = JSON.parse(localStorage.getItem("column_3"))
+        }
+
+        eventBus.$on('addColumn_1', ColumnCard => {
+
+            if (this.column_1.length < 3) {
+                this.errors.length = 0
+                this.column_1.push(ColumnCard)
+                localStorage.setItem('column_1', JSON.stringify(this.column_1))
+            } else {
+                this.errors.length = 0
+                this.errors.push('макс коллво заметок в 1 столбце')
             }
-            eventBus.$emit('card-submitted', card)
-            this.title = null
-            this.subtask1 = null
-            this.subtask2 = null
-            this.subtask3 = null
-            this.subtask4 = null
-            this.subtask5 = null
+        })
+        eventBus.$on('addColumn_2', ColumnCard => {
+            if (this.column_2.length < 5) {
+                this.errors.length = 0
+                this.column_2.push(ColumnCard)
+                this.column_1.splice(this.column_1.indexOf(ColumnCard), 1)
+                localStorage.setItem('column_1', JSON.stringify(this.column_1))
+                localStorage.setItem('column_2', JSON.stringify(this.column_2))
+            } else {
+                this.errors.length = 0
+                this.errors.push('Вы не можете редактировать первую колонку, пока во второй есть 5 карточек.')
+            }
+        })
+        eventBus.$on('addColumn_3', ColumnCard => {
+            JSON.parse(localStorage.getItem('column_2'))
+            this.column_3.push(ColumnCard)
+            this.column_2.splice(this.column_2.indexOf(ColumnCard), 1)
+            localStorage.setItem('column_2', JSON.stringify(this.column_2))
+            localStorage.setItem('column_3', JSON.stringify(this.column_3))
+        })
+
+    }
+})
+
+Vue.component('newCard', {
+    template: `
+    <section id="main" class="main-alt">
+    
+        <form class="row" @submit.prevent="Submit">
+        
+            <p class="main_text">Notes</p>
+        <div class="form_control">
+                
+            <input required type="text" v-model="name" id="name" placeholder="Name"/>
+            
+            <input required type="text"  v-model="point_1" placeholder="First point"/>
+
+            <input required type="text"  v-model="point_2" placeholder="Second point"/>
+
+            <input required type="text"  v-model="point_3" placeholder="Third point"/> 
+
+            <input required type="text"  v-model="point_4"  placeholder="Fourth point"/>
+
+             <input required type="text" v-model="point_5"  placeholder="Fifth point"/>
+        </div>
+        <div>                    
+                <p class="sub">
+                        <input type="submit" value="Add a card"> 
+                </p>
+            </div>
+        </form>
+    </section>
+    `,
+    data() {
+        return {
+            name: null,
+            point_1: null,
+            point_2: null,
+            point_3: null,
+            point_4: null,
+            point_5: null,
+            date: null,
+        }
+    },
+    methods: {
+
+        Submit() {
+            let card = {
+                name: this.name,
+                points: [
+                    {name: this.point_1, completed: false},
+                    {name: this.point_2, completed: false},
+                    {name: this.point_3, completed: false},
+                    {name: this.point_4, completed: false},
+                    {name: this.point_5, completed: false}
+                ],
+                date: new Date().toLocaleString(),
+                // date: null,
+                status: 0,
+                test: 0,
+                errors: [],
+            }
+            eventBus.$emit('addColumn_1', card)
+            this.name = null;
+            this.point_1 = null
+            this.point_2 = null
+            this.point_3 = null
+            this.point_4 = null
+            this.point_5 = null
+        }
+    }
+
+})
+
+Vue.component('column_1', {
+    template: `
+        <section id="main" class="main-alt">
+            <div class="column column_one">
+                <div class="card" v-for="card in column_1">
+                <h3>{{ card.name }}</h3>
+                    <div class="tasks" v-for="task in card.points"
+                    @click="TaskCompleted(card, task)"
+                        :class="{completed: task.completed}">
+                        {{ task.name }}
+                    </div>
+                </div>
+            </div>
+        </section>
+    `,
+    props: {
+        column_1: {
+            type: Array,
+        },
+        column_2: {
+            type: Array,
+        },
+        card: {
+            type: Object,
+        },
+        errors: {
+            type: Array,
+        },
+    },
+    methods: {
+        TaskCompleted(ColumnCard, task) {
+            JSON.parse(localStorage.getItem("column_1"))
+            task.completed = true
+            ColumnCard.status += 1
+            localStorage.setItem('column_1', JSON.stringify(this.column_1))
+             if (ColumnCard.status === 3) {
+                eventBus.$emit('addColumn_2', ColumnCard)
+            }
+            else if (ColumnCard.status > 3){
+                ColumnCard.status = 0
+                this.column_1.forEach(items => {
+                        items.points.forEach(items => {
+                            items.completed = false;
+                        })
+                    })
+             }
+        },
+    },
+})
+
+Vue.component('column_2', {
+    template: `
+        <section id="main" class="main-alt">
+            <div class="column column_two">
+                <div class="card" v-for="card in column_2">
+                <h3>{{ card.name }}</h3>
+                    <div class="tasks" v-for="task in card.points"
+                        v-if="task.name != null"
+                        @click="TaskCompleted(card, task)"
+                        :class="{completed: task.completed}">
+                        {{ task.name }}
+                    </div>
+                </div>
+            </div>
+        </section>
+    `,
+    props: {
+        column_2: {
+            type: Array,
+        },
+        card: {
+            type: Object,
+        },
+    },
+    methods: {
+        TaskCompleted(ColumnCard, task) {
+            JSON.parse(localStorage.getItem("column_2"))
+            task.completed = true
+            ColumnCard.status += 1
+            localStorage.setItem('column_2', JSON.stringify(this.column_2))
+            let count = 0
+            for(let i = 0; i < 5; i++){
+                count++
+            }
+            if (( ColumnCard.status / count) * 100 >= 100) {
+                eventBus.$emit('addColumn_3', ColumnCard)
+                ColumnCard.date = new Date().toLocaleString()
+            }
         }
     }
 })
 
+Vue.component('column_3', {
+    template: `
+        <section id="main" class="main-alt">
+            <div class="column column_three">
+                <div class="card" v-for="card in column_3">
+                <h3>{{ card.name }}</h3>
+                    <div class="tasks" v-for="task in card.points"
+                        v-if="task.name != null"
+                        @click="TaskCompleted(card, task)"
+                        :class="{completed: task.completed}">
+                        {{ task.name }}
+                    </div>
+                        <p>{{ card.date }}</p>
+                </div>
+            </div>
+        </section>
+    `,
+    props: {
+        column_3: {
+            type: Array,
+        },
+        card: {
+            type: Object,
+        },
+    },
+    methods: {
+    }
+})
+
+
+
 let app = new Vue({
     el: '#app',
-    data: {
-        name: 'Notes'
-    }
 })
