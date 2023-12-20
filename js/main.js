@@ -213,3 +213,25 @@ Vue.component('newcard', {
             errors: [],
         }
     },
+    methods: {
+        onSubmit() {
+            let card = {
+                title: this.title,
+                subtasks: [{title: this.subtask1, completed: false},
+                            {title: this.subtask2, completed: false},
+                            {title: this.subtask3, completed: false},
+                            {title: this.subtask4, completed: false},
+                            {title: this.subtask5, completed: false}],
+                date: null,
+                status: 0
+            }
+            eventBus.$emit('card-submitted', card)
+            this.title = null
+            this.subtask1 = null
+            this.subtask2 = null
+            this.subtask3 = null
+            this.subtask4 = null
+            this.subtask5 = null
+        }
+    }
+})
