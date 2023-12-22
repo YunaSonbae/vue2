@@ -22,20 +22,19 @@ Vue.component('column', {
     },
     mounted() {
 
-        // if ((JSON.parse(localStorage.getItem("column_1")) != null)){
-        //     this.column_1 = JSON.parse(localStorage.getItem("column_1"))
-        // }
-        // if ((JSON.parse(localStorage.getItem("column_2")) != null)){
-        //     this.column_2 = JSON.parse(localStorage.getItem("column_2"))
-        // }
-        // if ((JSON.parse(localStorage.getItem("column_3")) != null)){
-        //     this.column_3 = JSON.parse(localStorage.getItem("column_3"))
-        // }
+        if ((JSON.parse(localStorage.getItem("column_1")) != null)){
+            this.column_1 = JSON.parse(localStorage.getItem("column_1"))
+        }
+        if ((JSON.parse(localStorage.getItem("column_2")) != null)){
+            this.column_2 = JSON.parse(localStorage.getItem("column_2"))
+        }
+        if ((JSON.parse(localStorage.getItem("column_3")) != null)){
+            this.column_3 = JSON.parse(localStorage.getItem("column_3"))
+        }
 
         eventBus.$on('addColumn_1', ColumnCard => {
 
             if (this.column_1.length < 3) {
-                console.log(ColumnCard)
                 this.errors.length = 0
                 this.column_1.push(ColumnCard)
                 localStorage.setItem('column_1', JSON.stringify(this.column_1))
@@ -76,17 +75,17 @@ Vue.component('newCard', {
             <p class="main_text">Notes</p>
         <div class="form_control">
                 
-            <input required type="text" v-model.trim="name" id="name" placeholder="Name"/>
+            <input required type="text" v-model="name" id="name" placeholder="Name"/>
             
-            <input required type="text"  v-model.trim="point_1" placeholder="First point"/>
+            <input required type="text"  v-model="point_1" placeholder="First point"/>
 
-            <input required type="text"  v-model.trim="point_2" placeholder="Second point"/>
+            <input required type="text"  v-model="point_2" placeholder="Second point"/>
 
-            <input required type="text"  v-model.trim="point_3" placeholder="Third point"/> 
+            <input required type="text"  v-model="point_3" placeholder="Third point"/> 
 
-            <input  type="text"  v-model.trim="point_4"  placeholder="Fourth point"/>
+            <input required type="text"  v-model="point_4"  placeholder="Fourth point"/>
 
-             <input  type="text" v-model.trim="point_5"  placeholder="Fifth point"/>
+             <input required type="text" v-model="point_5"  placeholder="Fifth point"/>
         </div>
         <div>                    
                 <p class="sub">
@@ -167,39 +166,24 @@ Vue.component('column_1', {
         },
     },
     methods: {
-//         TaskCompleted(ColumnCard, task) {
-//             JSON.parse(localStorage.getItem("column_1"))
-//             task.completed = true
-//             ColumnCard.status += 1
-//             localStorage.setItem('column_1', JSON.stringify(this.column_1))
-//              if (ColumnCard.status === 2) {
-//                 eventBus.$emit('addColumn_2', ColumnCard)
-//             }
-//             else if (ColumnCard.status > 2){
-//                 ColumnCard.status = 0
-//                 this.column_1.forEach(items => {
-//                         items.points.forEach(items => {
-//                             items.completed = false;
-//                         })
-//                     })
-//              }
-//         },
-//     },
-// })
-    TaskCompleted(ColumnCard, task){
-        JSON.parse(localStorage.getItem("column_1"))
-        task.completed = true
-        ColumnCard.status += 1
-        console.log(ColumnCard.status)
-        if (ColumnCard.status === 3 && ColumnCard.points[4].name != null && ColumnCard.points[3].name != null){
-            eventBus.$emit('addColumn_2', ColumnCard)
-        } else if (ColumnCard.points[4].name == null && ColumnCard.points[3].name == null && ColumnCard.status === 1){
-            console.log(ColumnCard.points[0])
-            eventBus.$emit('addColumn_2', ColumnCard)
-        } 
-    }
-}
-    
+        TaskCompleted(ColumnCard, task) {
+            JSON.parse(localStorage.getItem("column_1"))
+            task.completed = true
+            ColumnCard.status += 1
+            localStorage.setItem('column_1', JSON.stringify(this.column_1))
+             if (ColumnCard.status === 3) {
+                eventBus.$emit('addColumn_2', ColumnCard)
+            }
+            else if (ColumnCard.status > 3){
+                ColumnCard.status = 0
+                this.column_1.forEach(items => {
+                        items.points.forEach(items => {
+                            items.completed = false;
+                        })
+                    })
+             }
+        },
+    },
 })
 
 Vue.component('column_2', {
@@ -227,41 +211,21 @@ Vue.component('column_2', {
         },
     },
     methods: {
-
-//             TaskCompleted(ColumnCard, task) {
-//                 JSON.parse(localStorage.getItem("column_2"))
-//                 task.completed = true
-//                 ColumnCard.status += 1
-//                 localStorage.setItem('column_2', JSON.stringify(this.column_2))
-//                  if (ColumnCard.status === 2) {
-//                     eventBus.$emit('addColumn_3', ColumnCard)
-//                 }
-//                 else if (ColumnCard.status > 2){
-//                     ColumnCard.status = 0
-//                     this.column_1.forEach(items => {
-//                             items.points.forEach(items => {
-//                                 items.completed = false;
-//                             })
-//                         })
-//                  }
-//             },
-        
-//     }
-// })
-TaskCompleted(ColumnCard, task){
-    JSON.parse(localStorage.getItem("column_2"))
-    task.completed = true
-    ColumnCard.status += 1
-    console.log(ColumnCard.status)
-    if (ColumnCard.status === 3 && ColumnCard.points[4].name != null && ColumnCard.points[3].name != null){
-        eventBus.$emit('addColumn_3', ColumnCard)
-    } else if (ColumnCard.points[4].name == null && ColumnCard.points[3].name == null && ColumnCard.status === 1){
-        console.log(ColumnCard.points[0])
-        eventBus.$emit('addColumn_3', ColumnCard)
-    } 
-}
-}
-
+        TaskCompleted(ColumnCard, task) {
+            JSON.parse(localStorage.getItem("column_2"))
+            task.completed = true
+            ColumnCard.status += 1
+            localStorage.setItem('column_2', JSON.stringify(this.column_2))
+            let count = 0
+            for(let i = 0; i < 5; i++){
+                count++
+            }
+            if (( ColumnCard.status / count) * 100 >= 100) {
+                eventBus.$emit('addColumn_3', ColumnCard)
+                ColumnCard.date = new Date().toLocaleString()
+            }
+        }
+    }
 })
 
 Vue.component('column_3', {
